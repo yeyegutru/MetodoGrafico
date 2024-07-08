@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>METGRAPH</title>
+    <link rel="stylesheet" href="Styles.css" />
+  </head>
+  <body>
+
+    <div id="Header">
+      <h1>PROGRAMACION LINEAL METGRAPH</h1>
+    </div>
+    <div id="Body">
+
+      <div id="Formulas" class="borde">
+        <section id="Formulario-Fob" class="F1 borde padding">
+          <label for="Fobjetivo"
+            >FUNCION OBJETIVO
+            <input type="text" id="Fobjetivo" class="input-text" name="user_name" />
+            <div>
+              <input type="radio" id="Function" name="function" value="min" />
+              <label for="min">Minimizar</label>
+              <input type="radio" id="Function" name="function" value="max" />
+              <label for="max">Maximizar</label>
+              </label>
+            </div>
+            
+        </section>
+
+        <section id="Formulario-Res" class="padding">
+          <form id="Formulario" class="F1 " action="">
+            <label for="Restricciones"
+              >REESTRICCION
+              <input type="text" id="Restricciones" class="input-text" name="user_name" />
+            </label>
+            <button id="btn" type="submit">Añadir</button>
+          </form>
+          
+        </section>
+
+        <section id="Datos-Procesados">
+          <input type="radio" id="Function" name="function" value="f1" />
+          <label for="f1">2x+2y<=12</label>
+        </section>
+        <section id="btn-graficar">
+          <button id="btn">Graficar</button>
+        </section>
+        <br />
+        <section id="Tabla">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">X</th>
+                <th scope="col">Y</th>
+                <th scope="col">VALUE</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">2X</th>
+                <td>3X</td>
+                <td>220</td>
+              </tr>
+              <tr>
+                <th scope="row">3X</th>
+                <td>1Y</td>
+                <td>450</td>
+              </tr>
+              <tr>
+                <th scope="row">1X</th>
+                <td>22Y</td>
+                <td>290</td>
+              </tr>
+              <tr>
+                <th scope="row">14X</th>
+                <td>19Y</td>
+                <td>360</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row" colspan="2">Valor Maximo</th>
+                <td>33</td>
+              </tr>
+            </tfoot>
+          </table>
+        </section>
+      </div>
+
+      <section id="Grafico">
+        <canvas id="planoCartesiano"></canvas>
+      </section>
+    </div>
+
+    <script src="Script.js"></script>
+  </body>
+  
+</html>

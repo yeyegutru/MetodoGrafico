@@ -1,0 +1,152 @@
+
+
+:root{
+    --Color-Background:yellow;
+    --Color-azul: #1B4965; 
+    --Color-white: #FAFAFA;
+    --Color-Grafico : #CAE9FF;
+    --Color-GraficoTenue : #BEE9E8; 
+    --Tittle-Font : @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Quicksand:wght@300;500;700&display=swap');
+    --Font-weight-bold: 700;
+    --Font-weight-media: 500;
+    --Font-weight-delgada: 300;
+}
+
+body {
+    background-color: var(--Color-white);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--Tittle-Font), sans-serif;
+    font-style: italic;
+    font-weight: var(--Font-weight-bold);
+}
+h1{
+  margin: 0;
+}
+
+canvas {
+    border: 1px solid #ccc;
+    width: 90%;
+    height: 90%;
+}
+
+#Header {
+    background-color: var(--Color-azul);
+    color: var(--Color-white);
+    text-align: center;
+    padding: 1px;
+    border-bottom: #ccc solid 5px;
+}
+
+#Body {
+    display: flex;
+    flex: 3;
+    text-align: center;
+}
+#Formulas{
+    flex: 1;
+}
+.borde{
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+.padding{
+  padding: 25px ;
+}
+.input-text{
+  border: #ccc 1px solid;
+  width: 90%;
+  height: 20px;
+}
+#Formulario, #Datos-Procesados {
+    flex: 1;
+    background-color: #f9f9f9;
+    padding: 10px;
+    
+}
+.F1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#Grafico {
+    display: flex;
+    justify-content: center; /* Centrar horizontalmente */
+    align-items: center; /* Centrar verticalmente */
+    flex: 2;
+    padding: 10px;
+    background-color: var(--Color-white);
+    text-align: center;
+
+}
+
+
+
+canvas {
+    border: 1px solid #ccc;
+}
+#btn-graficar{
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+#btn{
+  margin: 10px;
+    background: #CAE9FF;
+    width: 100px;
+    height: 30px;
+    border-radius: 5px;
+    border: none;
+}
+
+/* Estilos Tabla*/
+#Tabla{
+    display: flex;
+    justify-content: center; /* Centrar horizontalmente */
+    align-items: center; /* Centrar verticalmente */
+}
+table {
+    border-collapse: collapse;
+    border: 2px solid rgb(140 140 140);
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
+  
+  caption {
+    caption-side: bottom;
+    padding: 10px;
+    font-weight: bold;
+  }
+  
+  thead,
+  tfoot {
+    background-color: rgb(228 240 245);
+  }
+  
+  th,
+  td {
+    border: 1px solid rgb(160 160 160);
+    padding: 8px 10px;
+  }
+  
+  td:last-of-type {
+    text-align: center;
+  }
+  
+  tbody > tr:nth-of-type(even) {
+    background-color: rgb(237 238 242);
+  }
+  
+  tfoot th {
+    text-align: right;
+  }
+  
+  tfoot td {
+    font-weight: bold;
+  }

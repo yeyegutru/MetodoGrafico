@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Gráfico de Programación Lineal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+</head>
+
+<body>
+    <canvas id="myChart" width="400" height="400"></canvas>
+
+    <script>
+        var ctx = document.getElementById("myChart").getContext("2d");
+            var scatterChart = new Chart(ctx, {
+              type: "scatter",
+              backgroundColor: "rgba(42, 94, 120, 1)",
+              data: {
+                labels: chartdata,
+                datasets: [
+                  {
+                    label: "SURVEYS MERGED",
+                    borderColor: "rgba(42, 94, 120, 1)",
+                    backgroundColor: "rgba(42, 94, 120, 1)",
+                    data: resultnew,
+                  },
+                ],
+              },
+
+              options: {
+                scales: {
+                  xAxes: [
+                    {
+                      ticks: {
+                         min: 2.5,
+                         
+                      },
+                    },
+                  ],
+                  yAxes: [
+                    {
+                      ticks: {
+                         min: 2.5,
+                        
+                      },
+                    },
+                  ],
+                },
+                tooltips: {
+                  callbacks: {
+                    label: function (tooltipItem, data) {
+                      var label = data.labels[tooltipItem.index];
+                      return (
+                        label +
+                        ": (" +
+                        tooltipItem.xLabel +
+                        ", " +
+                        tooltipItem.yLabel +
+                        ")"
+                      );
+                    },
+                  },
+                },
+              },
+            });
+    </script>
+</body>
+
+</html>
