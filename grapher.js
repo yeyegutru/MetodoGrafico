@@ -1,8 +1,191 @@
+// Variables Canvas
+let VarCanvas;
+const ContenedorCanvas = document.getElementById("canvas-row-container");
+const NuevoCanvas = document.createElement("canvas");
+
+let maxVarX = -Infinity;
+
+// Metodo para eliminar el canva cuando ya se ha realizado una Grafica
+function RemoverCanvas() {
+  // actualizamos el canvas
+  VarCanvas = document.getElementById("graphCanvas");
+  // remover el canvas si ya existe se le puede agragar otra condicion
+  if (VarCanvas) {
+    ContenedorCanvas.removeChild(VarCanvas);
+    $("#graph-label").empty();
+  }
+}
+// metodo para inicializar el nuevo canvas
+function InicializarCanvas() {
+  NuevoCanvas.id = "graphCanvas";
+  NuevoCanvas.width = 800;
+  NuevoCanvas.height = 500;
+  console.log("InicializarCanvas() : " + Reestricciones);
+  ContenedorCanvas.appendChild(NuevoCanvas);
+  const CanvasCreation = NuevoCanvas.getContext("2d");
+}
+
+// Metodo para obtener los puntos de las rectas  de la grafica
+function ObtenerPuntosRectasGrafica(restriccion) {
+  // Variable para Info Rectas
+  let R = [];
+  // puntos de las rectas
+  for (let i = 0; i < restriccion.length; i++) {
+    let contx = 0;
+
+    let conty = 0;
+    let pointX = Math.abs(restriccion[i][3] / restriccion[i][0]);
+    let pointY = Math.abs(restriccion[i][3] / restriccion[i][1]);
+    maxVarX < pointX ? (maxVarX = pointX) : "";
+
+    // caso especial donde la recta queda en el origen lo que hace que no se genere una recta.
+    if ((pointX == 0) & (pointY == 0)) {
+      // contx=NumeroRandom(5,maxVarX);
+      contx = maxVarX;
+      pointY = TraerCasoEspecialValorY(
+        restriccion[i][0],
+        contx,
+        restriccion[i][1],
+        restriccion[i][3]
+      );
+    }
+    // Se crea un arrego para los puntos una recta x1 x2 y1 y2
+    let data = [
+      { x: pointX, y: conty },
+      { x: contx, y: pointY },
+      //se realiza un sort o ordenamiento de los datos deacuerdo a los elementos Y.
+    ].sort((a, b) => b.y - a.y);
+
+    // Generamos la Informacion respectiva para la Recta
+    R.push(GenerarInformacionRectas(i, data, restriccion[i][2]));
+  }
+  // retornando Informacion De Rectas
+  return R;
+}
+
+// Generarcion de los detalles para las rectas
+function GenerarInformacionRectas(NumeroRecta, data, Direccion) {
+  //traemos el colores de cada una de las lineas.
+  let color = ObtenerColorRectaAleatorio();
+  // generamos los datos de las lineas que se van a mostrar en la grafica.
+  return {
+    type: "line",
+    label: "Lineas " + (NumeroRecta + 1),
+    data, //datos de X,Y para la generacion de cada linea
+    borderColor: color, //color de la linea
+    borderWidth: 3, //Borde de la linea
+    fill: Direccion ? "start" : "end", // Activar el relleno del área debajo de la línea
+    backgroundColor: color + "20", // Color del área sombreada
+  };
+}
+
+// Funcion que retorna los puntos basicos de Interseccion 
+function Intersecciones_Basicas(coordenadasRectas){
+  // variables inicializada para la obtencion de las intersecciones 
+  let puntos_interccion =[];
+  // bucle para pasar por todas las posiciones del arreglo 
+  for (let i = 0; i < coordenadasRectas.length; i++) {
+    for (let j = 0; j < coordenadasRectas[i].data.length; j++) {
+      if (
+        coordenadasRectas[i].data[j].x == 0 ||
+        coordenadasRectas[i].data[j].y == 0
+      ) {
+        puntos_interccion.push(coordenadasRectas[i].data[j]);
+        // console.log("Primer If Interseccion :  x: ",coordenadasRectas[i].data[j].x, " y: ",coordenadasRectas[i].data[j].y);
+      }
+      // En alguno de los casos se puede dar un error y los valores de las coordenadas X Y pueden quedar como valores Infinitos o un valor mayor al eje Perteneciente por lo cual en este caso se modifica de manera que tenga los valores de las coordenadas del siguiente elemento y el maximoGlobal sumandole 10.
+      if (coordenadasRectas[i].data[j].x == Infinity) {
+        // El valor X afecta la grafica por lo cual se necesita una grafica Enfocada en las lineas sin malgastar espacio.
+        coordenadasRectas[i].data[j].x = MaxEjeX;
+        // Operador ternario para obtener la posicion de los datos.
+        coordenadasRectas[i].data[j].y =
+          coordenadasRectas[i].data[
+            j == coordenadasRectas[i].data.length - 1 ? j - 1 : j + 1
+          ].y;
+      }
+
+      if (coordenadasRectas[i].data[j].y == Infinity) {
+        // como el eje Y es el eje dependiente del X entonces se le puede sumar 10 puntos a la coordenada maxima.
+        coordenadasRectas[i].data[j].y = MaxEjeY + 10;
+        // Operador ternario para obtener la posicion de los datos.
+        coordenadasRectas[i].data[j].x =
+          coordenadasRectas[i].data[
+            j == coordenadasRectas[i].data.length - 1 ? j - 1 : j + 1
+          ].x;
+      }
+    }
+  }
+  return puntos_interccion;
+}
+
+// funcion para validar las intersecciones por medio del metodo filtro que realizamos 
+function Validar_Intersecciones_Validas(valuesInter, cantCoordenadas){
+  console.log("cant coordenadas : "+ valuesInter)
+  for (let i = 0; i < cantCoordenadas.Length; i++) {
+    valuesInter = valuesInter.filter((_, index) =>
+      validarPunto(
+        DatosCoordenadas[i].data,
+        valuesInter[index],
+        Reestricciones[i][2]
+      )
+    );
+  }
+  return valuesInter;
+}
+
+
+// Funcion para obtener posibles valores solucion 
+function Determinar_Posibles_Soluciones(array_Intersecciones, valuesObj,objetivo){
+  let values=[];
+  // Determinar las posibles soluciones con la ecuacion objetivo.
+  for (let i = 0; i < array_Intersecciones.length; i++) {
+    // Segun la Funcion objetivo me va guardar los valores obtenidos por cada interseccion ademas de las intersecciones para despues ser mostrados en una tabla.
+    values.push({
+      result:
+        valuesObj[0] * array_Intersecciones[i].x +
+        valuesObj[1] * array_Intersecciones[i].y,
+      x: array_Intersecciones[i].x,
+      y: array_Intersecciones[i].y,
+    });
+  }
+  // Ordenar los valores totales para el objetivo del problema de programacion lineal
+  values = values.sort((a, b) => {
+    if (objetivo == 0) {
+      return a.result - b.result; // Orden ascendente
+    } else {
+      return b.result - a.result; // Orden descendente
+    }
+  });
+  return values;
+}
+
+// Función para encontrar los valores máximos de 'x' y 'y' en un array de objetos y en el array de elementos
+function ValoresMaximosGrafica(elementosArray) {
+  return elementosArray.reduce(
+    (acc, elemento) => {
+      const { maxX, maxY } = elemento.data.reduce(
+        (innerAcc, obj) => ({
+          maxX: Math.max(innerAcc.maxX, obj.x),
+          maxY: Math.max(innerAcc.maxY, obj.y),
+        }),
+        { maxX: -Infinity, maxY: -Infinity }
+      );
+
+      return {
+        maxGlobalX: Math.max(acc.maxGlobalX, maxX),
+        maxGlobalY: Math.max(acc.maxGlobalY, maxY),
+      };
+    },
+    { maxGlobalX: -Infinity, maxGlobalY: -Infinity }
+  );
+}
+
 //Funcion para eliminar Problemas de numeros Decimales que varian muy poco 1.666666667 1.6666666665
 function RedondearDecimal(number, decimalPlaces) {
   const factor = 10 ** decimalPlaces;
   return Math.round(number * factor) / factor;
 }
+// Funcion para cambiar de decimal a fraccion
 function decimalAFraccion(numero) {
   if (!isNaN(numero) && numero % 1 !== 0) {
     let fraccion = math.fraction(numero);
@@ -67,27 +250,6 @@ function InterseccionesMetodoCrammerDeterminante(restricciones) {
   return listPointsInter;
 }
 
-// Función para encontrar los valores máximos de 'x' y 'y' en un array de objetos y en el array de elementos
-function ValoresMaximosGrafica(elementosArray) {
-  return elementosArray.reduce(
-    (acc, elemento) => {
-      const { maxX, maxY } = elemento.data.reduce(
-        (innerAcc, obj) => ({
-          maxX: Math.max(innerAcc.maxX, obj.x),
-          maxY: Math.max(innerAcc.maxY, obj.y),
-        }),
-        { maxX: -Infinity, maxY: -Infinity }
-      );
-
-      return {
-        maxGlobalX: Math.max(acc.maxGlobalX, maxX),
-        maxGlobalY: Math.max(acc.maxGlobalY, maxY),
-      };
-    },
-    { maxGlobalX: -Infinity, maxGlobalY: -Infinity }
-  );
-}
-
 function ObtenerColorRectaAleatorio() {
   const minColorValue = 50; // Valor mínimo para cada componente de color
 
@@ -138,164 +300,37 @@ function crearTablaResultados(valoresFObjTotales) {
   contenedor.appendChild(tabla);
 }
 
-function RemoverCanvas() {
-  // remover el canvas si ya existe se le puede agragar otra condicion
-  if (VarCanvas) {
-    ContenedorCanvas.removeChild(VarCanvas);
-    $("#graph-label").empty();
-  }
-}
-function InicializarCanvas() {
-  NuevoCanvas.id = "graphCanvas";
-  NuevoCanvas.width = 800;
-  NuevoCanvas.height = 500;
-  console.log(Reestricciones);
-  ContenedorCanvas.appendChild(NuevoCanvas);
-  const CanvasCreation = NuevoCanvas.getContext("2d");
-}
-
-function GenerarInformacionRectas(NumeroRecta, data, Direccion) {
-  //traemos el colores de cada una de las lineas.
-  let color = ObtenerColorRectaAleatorio();
-  // generamos los datos de las lineas que se van a mostrar en la grafica.
-  DatosCoordenadas.push({
-    type: "line",
-    label: "Lineas " + (NumeroRecta+ 1),
-    data, //datos de X,Y para la generacion de cada linea
-    borderColor: color, //color de la linea
-    borderWidth: 3, //Borde de la linea
-    fill: Direccion ? "start" : "end", // Activar el relleno del área debajo de la línea
-    backgroundColor: color + "20", // Color del área sombreada
-  });
-}
-
-function ObtenerPuntosRectasGrafica() {
-  // puntos de las rectas
-  for (let i = 0; i < Reestricciones.length; i++) {
-    let contx = 0;
-
-    let conty = 0;
-    let pointX = Math.abs(Reestricciones[i][3] / Reestricciones[i][0]);
-    let pointY = Math.abs(Reestricciones[i][3] / Reestricciones[i][1]);
-    maxVarX < pointX ? (maxVarX = pointX) : "";
-
-    // caso especial donde la recta queda en el origen lo que hace que no se genere una recta.
-    if ((pointX == 0) & (pointY == 0)) {
-      // contx=NumeroRandom(5,maxVarX);
-      contx = maxVarX;
-      pointY = TraerCasoEspecialValorY(
-        Reestricciones[i][0],
-        contx,
-        Reestricciones[i][1],
-        Reestricciones[i][3]
-      );
-    }
-    //se realiza un sort o ordenamiento de los datos deacuerdo a los elementos Y.
-    let data = [
-      { x: pointX, y: conty },
-      { x: contx, y: pointY },
-    ].sort((a, b) => b.y - a.y);
-    GenerarInformacionRectas(i, data, Reestricciones[i][2]);
-  }
-
-  
-}
-
-// Variables Canvas
-const VarCanvas = document.getElementById("graphCanvas");
-const ContenedorCanvas = document.getElementById("canvas-row-container");
-const NuevoCanvas = document.createElement("canvas");
-// Variables de las Restricciones
-let DatosCoordenadas = [];
-let maxVarX = -Infinity;
-// variables Intersecciones
-let intersecciones = [];
-
 function GraficarPPL() {
-  
   // Canvas
   RemoverCanvas();
   InicializarCanvas();
-  ObtenerPuntosRectasGrafica();
+  // obtener las coordenadas de las rectas de las intersecciones 
+  let DatosCoordenadas = ObtenerPuntosRectasGrafica(Reestricciones);
+
   //revisar aqui esto :
   //Obtenemos los valores maximos para cada unos de los ejes para la generacion de la grafica correctamente.
-  const { maxGlobalX: MaxEjeX, maxGlobalY: MaxEjeY } =ValoresMaximosGrafica(DatosCoordenadas);
-  
+  const { maxGlobalX: MaxEjeX, maxGlobalY: MaxEjeY } = ValoresMaximosGrafica(DatosCoordenadas);
+
   // Obtencion de intersecciones Basicas
-  for (let i = 0; i < DatosCoordenadas.length; i++) {
-    for (let j = 0; j < DatosCoordenadas[i].data.length; j++) {
-      if (
-        DatosCoordenadas[i].data[j].x == 0 ||
-        DatosCoordenadas[i].data[j].y == 0
-      ) {
-        intersecciones.push(DatosCoordenadas[i].data[j]);
-        // console.log("Primer If Interseccion :  x: ",DatosCoordenadas[i].data[j].x, " y: ",DatosCoordenadas[i].data[j].y);
-      }
-      // En alguno de los casos se puede dar un error y los valores de las coordenadas X Y pueden quedar como valores Infinitos o un valor mayor al eje Perteneciente por lo cual en este caso se modifica de manera que tenga los valores de las coordenadas del siguiente elemento y el maximoGlobal sumandole 10.
-      if (DatosCoordenadas[i].data[j].x == Infinity) {
-        // El valor X afecta la grafica por lo cual se necesita una grafica Enfocada en las lineas sin malgastar espacio.
-        DatosCoordenadas[i].data[j].x = MaxEjeX;
-        // Operador ternario para obtener la posicion de los datos.
-        DatosCoordenadas[i].data[j].y =
-          DatosCoordenadas[i].data[
-            j == DatosCoordenadas[i].data.length - 1 ? j - 1 : j + 1
-          ].y;
-      }
-
-      if (DatosCoordenadas[i].data[j].y == Infinity) {
-        // como el eje Y es el eje dependiente del X entonces se le puede sumar 10 puntos a la coordenada maxima.
-        DatosCoordenadas[i].data[j].y = MaxEjeY + 10;
-        // Operador ternario para obtener la posicion de los datos.
-        DatosCoordenadas[i].data[j].x =
-          DatosCoordenadas[i].data[
-            j == DatosCoordenadas[i].data.length - 1 ? j - 1 : j + 1
-          ].x;
-      }
-    }
-  }
-  // console.log("Intersecciones : ",intersecciones)
-
-  // Intersecciones de las rectas
+  let intersecciones = Intersecciones_Basicas(DatosCoordenadas);
+  console.log("Intersecciones basicas : "+ JSON.stringify(intersecciones));
+  
+  // Obtener Intersecciones de las rectas
   intersecciones.push(
     ...InterseccionesMetodoCrammerDeterminante(Reestricciones)
   );
-  // intersecciones que se pueden considerar validas
-  let interseccionesValidas = [...intersecciones];
-  console.log("Intersecciones Validas", interseccionesValidas);
-  // Llamada a la función para encontrar intersecciones
-  for (let i = 0; i < DatosCoordenadas.length; i++) {
-    interseccionesValidas = interseccionesValidas.filter((_, index) =>
-      validarPunto(
-        DatosCoordenadas[i].data,
-        interseccionesValidas[index],
-        Reestricciones[i][2]
-      )
-    );
-  }
+  //console.log("Intersecciones Rectas  : "+ JSON.stringify(intersecciones));
 
-  console.log("intersecciones validas con FILTRO: ", interseccionesValidas);
-  // Determinar las posibles soluciones con la ecuacion objetivo.
-  let valoresFOTotales = [];
-  for (let i = 0; i < interseccionesValidas.length; i++) {
-    // Segun la Funcion objetivo me va guardar los valores obtenidos por cada interseccion ademas de las intersecciones para despues ser mostrados en una tabla.
-    valoresFOTotales.push({
-      result:
-        ValuesObjetivo[0] * interseccionesValidas[i].x +
-        ValuesObjetivo[1] * interseccionesValidas[i].y,
-      x: interseccionesValidas[i].x,
-      y: interseccionesValidas[i].y,
-    });
-  }
-  console.log("Valores : ", valoresFOTotales);
+  // Validar  las intersecciones validas para las reestricciones 
+  let interseccionesValidas =Validar_Intersecciones_Validas(intersecciones,DatosCoordenadas);
+  
+ 
+//Funcion para obtener los valores para la funcion objetivo * intersecciones validas 
+  let valoresFOTotales = Determinar_Posibles_Soluciones(interseccionesValidas,ValuesObjetivo,ObjetivoPPL);
+  console.log("Valores FOTotales : "+ JSON.stringify(valoresFOTotales));
+  
 
-  // Ordenar los valores totales para el objetivo del problema de programacion lineal
-  valoresFOTotales = valoresFOTotales.sort((a, b) => {
-    if (ObjetivoPPL == 0) {
-      return a.result - b.result; // Orden ascendente
-    } else {
-      return b.result - a.result; // Orden descendente
-    }
-  });
+//aqui voy modularizando 
 
   if (valoresFOTotales[0]) {
     DatosCoordenadas.push({

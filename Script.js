@@ -76,6 +76,8 @@ let ObjetivoPPL=0;
 let ValuesObjetivo=[];
 // funcion para calcular y graficar
 const Calcular_Graficar = async () => {
+  // para poder generar nuevos valores cada vez que se quiera 
+  Reestricciones = [];
   //   valores la zona >= <= =  0 1 2
   ValoresSignos = []; // > 0 | < 1 | = 2
   // valores de variables y las reestricciones 
@@ -125,7 +127,8 @@ const Calcular_Graficar = async () => {
   $("#canvas-container").show();
 };
 
-Reestricciones=[[8, 4, 0, 16],[1, 1, 1, 5],[2, 2, 1, 20],[1, -2, 0, 0]]
+Reestricciones=[[8, 4, 0, 16]];
+// ,[1, 1, 1, 5],[2, 2, 1, 20],[1, -2, 0, 0]]
 ObjetivoPPL=0;
 ValuesObjetivo=[2000,10000];
 GraficarPPL();
