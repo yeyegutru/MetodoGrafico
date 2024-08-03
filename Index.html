@@ -2,69 +2,57 @@
 <html>
 
 <head>
-    <title>Gráfico de Programación Lineal</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+  <title>Gráfico de Programación Lineal</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 </head>
 
 <body>
-    <canvas id="myChart" width="400" height="400"></canvas>
+  <canvas id="myChart" width="400" height="400"></canvas>
 
-    <script>
-        var ctx = document.getElementById("myChart").getContext("2d");
-            var scatterChart = new Chart(ctx, {
-              type: "scatter",
-              backgroundColor: "rgba(42, 94, 120, 1)",
-              data: {
-                labels: chartdata,
-                datasets: [
-                  {
-                    label: "SURVEYS MERGED",
-                    borderColor: "rgba(42, 94, 120, 1)",
-                    backgroundColor: "rgba(42, 94, 120, 1)",
-                    data: resultnew,
-                  },
-                ],
-              },
+  <script>
+   // Definir la función objetivo
+function objective(x) {
+  return 2000 * x; // solo depende de x, ya que y es una variable libre
+}
 
-              options: {
-                scales: {
-                  xAxes: [
-                    {
-                      ticks: {
-                         min: 2.5,
-                         
-                      },
-                    },
-                  ],
-                  yAxes: [
-                    {
-                      ticks: {
-                         min: 2.5,
-                        
-                      },
-                    },
-                  ],
-                },
-                tooltips: {
-                  callbacks: {
-                    label: function (tooltipItem, data) {
-                      var label = data.labels[tooltipItem.index];
-                      return (
-                        label +
-                        ": (" +
-                        tooltipItem.xLabel +
-                        ", " +
-                        tooltipItem.yLabel +
-                        ")"
-                      );
-                    },
-                  },
-                },
-              },
-            });
-    </script>
+// Definir el rango de valores para x
+var xValues = [];
+for (var i = 0; i <= 10; i++) {
+  xValues.push(i);
+}
+
+// Calcular los valores de y correspondientes
+var yValues = xValues.map(objective);
+
+// Crear el gráfico
+var ctx = document.getElementById('myChart').getContext('2d');
+var chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: xValues,
+    datasets: [{
+      label: 'Función objetivo',
+      data: yValues,
+      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    title: {
+      display: true,
+      text: 'Función objetivo 1000x + 10000y'
+    },
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
+});
+  </script>
 </body>
 
 </html>
