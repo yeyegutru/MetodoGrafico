@@ -6,12 +6,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="StyleInf.css">
+    <script src="Prueba.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body>
-    <div>
-        
-    </div>
+    <canvas id="myChart" width="400" height="400"></canvas>
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [
+                    {
+                        label: '2x + 3y = 12',
+                        data: [
+                            {x: -10, y: (12 - 2*(-10))/3}, // Extender la recta
+                            {x: 10, y: (12 - 2*10)/3}  // Extender la recta
+                        ],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        fill: false,
+                        showLine: true
+                    },
+                    {
+                        label: 'x = 2',
+                        data: [
+                            {x: 2, y: -10}, // Extender la recta
+                            {x: 2, y: 10}   // Extender la recta
+                        ],
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        fill: false,
+                        showLine: true
+                    },
+                    {
+                        label: 'y = 2',
+                        data: [
+                            {x: -10, y: 2}, // Extender la recta
+                            {x: 10, y: 2}   // Extender la recta
+                        ],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        fill: false,
+                        showLine: true
+                    },
+                    {
+                        label: 'x + y = 6',
+                        data: [
+                            {x: -10, y: 16}, // Extender la recta
+                            {x: 10, y: -4}   // Extender la recta
+                        ],
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        fill: false,
+                        showLine: true
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        min: -10,
+                        max: 10
+                    },
+                    y: {
+                        min: -10,
+                        max: 10
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

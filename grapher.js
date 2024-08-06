@@ -1,10 +1,20 @@
 // Variables Canvas
 let VarCanvas;
 const ContenedorCanvas = document.getElementById("canvas-row-container");
-const NuevoCanvas = document.createElement("canvas");
-let MaxEjeX = 0;
+let NuevoCanvas;
+// let MaxEjeX = 0;
+// let MaxEjeY = 0;
 let maxVarX = -Infinity;
+let maxVarY = -Infinity;
 
+//funcion para las tratar el problema del denominador en 0
+function Divide_CasoCero(numerator, denominator) {
+  if (denominator === 0) {
+    return 0; // o cualquier otro valor o comportamiento deseado
+  } else {
+    return numerator / denominator;
+  }
+}
 // Metodo para eliminar el canva cuando ya se ha realizado una Grafica
 function RemoverCanvas() {
   // actualizamos el canvas
@@ -17,6 +27,7 @@ function RemoverCanvas() {
 }
 // metodo para inicializar el nuevo canvas
 function InicializarCanvas() {
+  NuevoCanvas = document.createElement("canvas");
   NuevoCanvas.id = "graphCanvas";
   NuevoCanvas.width = 800;
   NuevoCanvas.height = 500;
@@ -31,23 +42,35 @@ function ObtenerPuntosRectasGrafica(restriccion, nombre_recta = null) {
   // puntos de las rectas
   for (let i = 0; i < restriccion.length; i++) {
     let contx = 0;
-
     let conty = 0;
-    let pointX = Math.abs(restriccion[i][3] / restriccion[i][0]);
-    let pointY = Math.abs(restriccion[i][3] / restriccion[i][1]);
-    maxVarX < pointX ? (maxVarX = pointX) : "";
+    let pointX = Divide_CasoCero(restriccion[i][3], restriccion[i][0]);
+    let pointY = Divide_CasoCero(restriccion[i][3], restriccion[i][1]);
+
+    console.log(" point x : ", pointX, " point y : ", pointY);
 
     // caso especial donde la recta queda en el origen lo que hace que no se genere una recta.
-    if ((pointX == 0) & (pointY == 0)) {
-      // contx=NumeroRandom(5,maxVarX);
-      contx = maxVarX;
-      pointY = TraerCasoEspecialValorY(
-        restriccion[i][0],
-        contx,
-        restriccion[i][1],
-        restriccion[i][3]
+    if (pointX == 0) {
+      pointX = maxVarX;
+      conty = Divide_CasoCero(
+        restriccion[i][3] - restriccion[i][0] * maxVarX,
+        restriccion[i][1]
+      );
+      // pointY= Divide_CasoCero(restriccion[i,3]-((restriccion[i,0])*maxVarX)==Infinity?0:(restriccion[i,0])*maxVarX,restriccion[i,1]);
+      // console.log("caso especial x :  ",contx, " y: ",pointY);
+      // pointY = TraerCasoEspecialValorY(
+      //   restriccion[i][0],
+      //   maxVarX,
+      //   restriccion[i][1],
+      //   restriccion[i][3]
+      // );
+    } else if (pointY == 0) {
+      pointY = maxVarY;
+      contx = Divide_CasoCero(
+        restriccion[i][3] - restriccion[i][1] * maxVarY,
+        restriccion[i][0]
       );
     }
+
     // Se crea un arrego para los puntos una recta x1 x2 y1 y2
     let data = [
       { x: pointX, y: conty },
@@ -80,6 +103,9 @@ function GenerarInformacionRectas(NumeroRecta, data, Direccion, nombre = null) {
 
 // Funcion que retorna los puntos basicos de Interseccion
 function Intersecciones_Basicas(coordenadasRectas) {
+  //Obtenemos los valores maximos para cada unos de los ejes para la generacion de la grafica correctamente.
+  const { maxGlobalX: MaxEjeX, maxGlobalY: MaxEjeY } =
+    ValoresMaximosGrafica(coordenadasRectas);
   // variables inicializada para la obtencion de las intersecciones
   let puntos_interccion = [];
   // bucle para pasar por todas las posiciones del arreglo
@@ -118,18 +144,32 @@ function Intersecciones_Basicas(coordenadasRectas) {
 }
 
 // funcion para validar las intersecciones por medio del metodo filtro que realizamos
-function Validar_Intersecciones_Validas(valuesInter, cantCoordenadas) {
-  for (let i = 0; i < cantCoordenadas.Length; i++) {
-    valuesInter = valuesInter.filter((_, index) =>
+function Validar_Intersecciones_Validas(valuesInter, cantCoordenadas, res) {
+  let ValuesIntersecciones = valuesInter;
+  for (let i = 0; i < cantCoordenadas.length; i++) {
+    ValuesIntersecciones = ValuesIntersecciones.filter((_, index) =>
       validarPunto(
-        DatosCoordenadas[i].data,
-        valuesInter[index],
-        Reestricciones[i][2]
+        cantCoordenadas[i].data,
+        ValuesIntersecciones[index],
+        res[i][2]
       )
     );
   }
-  return valuesInter;
+  return ValuesIntersecciones;
 }
+
+// let interseccionesValidas = [...intersecciones];
+// console.log("Intersecciones Validas", interseccionesValidas);
+// // Llamada a la función para encontrar intersecciones
+// for (let i = 0; i < DatosCoordenadas.length; i++) {
+//   interseccionesValidas = interseccionesValidas.filter((_, index) =>
+//     validarPunto(
+//       DatosCoordenadas[i].data,
+//       interseccionesValidas[index],
+//       Reestricciones[i][2]
+//     )
+//   );
+// }
 
 // Funcion para obtener posibles valores solucion
 function Determinar_Posibles_Soluciones(
@@ -200,7 +240,14 @@ function decimalAFraccion(numero) {
 }
 
 function validarPunto(linea, puntoAdicional, sentido) {
-  console.log(linea,puntoAdicional,sentido);
+  console.log(
+    "Validar Punto : " +
+      JSON.stringify(linea) +
+      " " +
+      JSON.stringify(puntoAdicional) +
+      " " +
+      sentido
+  );
   const valorPuntoLinea1 = linea[0];
   const valorPuntoLinea2 = linea[1];
   // ecuacion de la pendiente donde se determina los cambio de cada punto de la linea.
@@ -329,24 +376,33 @@ function DatosIntersecciones(PuntoSolucion, PosibleSoluciones) {
   return puntos;
 }
 
+function ObtenerPuntosMaximos(Reestricciones) {
+  let value_x,
+    value_y = 0;
+  Reestricciones.forEach((res) => {
+    value_x = Divide_CasoCero(res[3], res[0]);
+    value_y = Divide_CasoCero(res[3], res[1]);
+    maxVarX <= value_x ? (maxVarX = value_x) : "";
+    maxVarY <= value_y ? (maxVarY = value_y) : "";
+    console.log("value Max x : ", maxVarX, " Value max y : " + maxVarY);
+  });
+}
+
 function GraficarPPL() {
-
-
+  maxVarX = -Infinity;
+  maxVarY = -Infinity;
   // Canvas
   RemoverCanvas();
   InicializarCanvas();
-
+  // obtener puntos maximos para el plano cartesiano  X y Y, para las rectas con condiciones especiales.
+  ObtenerPuntosMaximos(Reestricciones);
 
   // obtener las coordenadas de las rectas de las intersecciones
   let DatosCoordenadas = ObtenerPuntosRectasGrafica(Reestricciones);
 
   console.log("Datos Coordenadas : ");
-  DatosCoordenadas.forEach(obj=> console.log(obj));
+  DatosCoordenadas.forEach((obj) => console.log(obj));
 
-  //Obtenemos los valores maximos para cada unos de los ejes para la generacion de la grafica correctamente.
-  const { maxGlobalX: MaxEjeX, maxGlobalY: MaxEjeY } =ValoresMaximosGrafica(DatosCoordenadas);
-
-  
   // Obtencion de intersecciones Basicas
   let intersecciones = Intersecciones_Basicas(DatosCoordenadas);
 
@@ -354,11 +410,18 @@ function GraficarPPL() {
   intersecciones.push(
     ...InterseccionesMetodoCrammerDeterminante(Reestricciones)
   );
-  console.log("Intersecciones Rectas  : "+ JSON.stringify(intersecciones));
+  console.log("Intersecciones Rectas  : " + JSON.stringify(intersecciones));
 
   // Validar  las intersecciones validas para las reestricciones
-  let interseccionesValidas = Validar_Intersecciones_Validas(intersecciones,DatosCoordenadas);
-  console.log("Intersecciones Validas : "+ JSON.stringify(interseccionesValidas));
+  let interseccionesValidas = Validar_Intersecciones_Validas(
+    [...intersecciones],
+    DatosCoordenadas,
+    Reestricciones
+  );
+
+  console.log(
+    "Intersecciones Validas : " + JSON.stringify(interseccionesValidas)
+  );
 
   //Funcion para obtener los valores para la funcion objetivo * intersecciones validas
   let valoresFOTotales = Determinar_Posibles_Soluciones(
@@ -370,22 +433,29 @@ function GraficarPPL() {
 
   //Grafica de la Funcion Objetivo :
 
-  // const fila =[ValuesObjetivo[0],ValuesObjetivo[1],ObjetivoPPL,valoresFOTotales[0].result];
-  // console.log("Esto es la fila : " +fila )
-  // let dataFO=[];
-  // dataFO.push(fila);
-  // DatosCoordenadas.push(...ObtenerPuntosRectasGrafica(dataFO,"Funcion Objetivo"))
+  const fila = [
+    ValuesObjetivo[0],
+    ValuesObjetivo[1],
+    ObjetivoPPL,
+    valoresFOTotales[0].result,
+  ];
+  console.log("Esto es la fila : " + fila);
+  let dataFO = [];
+  dataFO.push(fila);
+  DatosCoordenadas.push(
+    ...ObtenerPuntosRectasGrafica(dataFO, "Funcion Objetivo")
+  );
 
   DatosCoordenadas.push(
     ...DatosIntersecciones(valoresFOTotales[0], interseccionesValidas)
   );
 
-  // Se vuelven decimales todos valores para una mejor comprension
-  for (let valor of valoresFOTotales) {
-    valor.x = decimalAFraccion(valor.x);
-    valor.y = decimalAFraccion(valor.y);
-    valor.result = decimalAFraccion(valor.result);
-  }
+  // // Se vuelven decimales todos valores para una mejor comprension
+  // for (let valor of valoresFOTotales) {
+  //   valor.x = decimalAFraccion(valor.x);
+  //   valor.y = decimalAFraccion(valor.y);
+  //   valor.result = decimalAFraccion(valor.result);
+  // }
 
   const chartData = {
     type: "line",
