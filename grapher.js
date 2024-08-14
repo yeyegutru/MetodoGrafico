@@ -1,4 +1,5 @@
 // Variables Canvas
+const contenedor_modelo = document.getElementById("modelo-container");
 let VarCanvas;
 const ContenedorCanvas = document.getElementById("canvas-row-container");
 let NuevoCanvas;
@@ -38,8 +39,15 @@ function InicializarCanvas() {
 // Metodo para obtener los puntos de las rectas  de la grafica
 function ObtenerPuntosRectasGrafica(restriccion, nombre_recta = null) {
   // Variable para Info Rectas
+  let contSecundario = "";
   let R = [];
   // puntos de las rectas
+  contSecundario += `
+  <ul>
+  <li><h3 class="text-start">Obtencion de la recta${
+    nombre_recta != null ? ` ` + nombre_recta : "s"
+  } : </h3>
+  <ol>`;
   for (let i = 0; i < restriccion.length; i++) {
     let contx = 0;
     let conty = 0;
@@ -55,6 +63,21 @@ function ObtenerPuntosRectasGrafica(restriccion, nombre_recta = null) {
         restriccion[i][3] - restriccion[i][0] * maxVarX,
         restriccion[i][1]
       );
+      contSecundario += `
+      <h4>Recta ${
+        nombre_recta != null ? nombre_recta : i + 1
+      } Caso Especial X1:</h4>
+      <li><strong>x1</strong>=${pointX} <strong>x2</strong>= ${
+        restriccion[i][3]
+      } - (${restriccion[i][0]}(${maxVarX}))/ ${
+        restriccion[i][1]
+      } = ${conty}    <strong>(${pointX},${conty})</strong></li>
+      <li><strong>x1</strong>=0 <strong>x2</strong>= ${
+        restriccion[i][3]
+      } - (0)/ ${
+        restriccion[i][1]
+      } = ${pointY}    <strong>(0,${pointY})</strong></li>`;
+
       // pointY= Divide_CasoCero(restriccion[i,3]-((restriccion[i,0])*maxVarX)==Infinity?0:(restriccion[i,0])*maxVarX,restriccion[i,1]);
       // console.log("caso especial x :  ",contx, " y: ",pointY);
       // pointY = TraerCasoEspecialValorY(
@@ -69,6 +92,33 @@ function ObtenerPuntosRectasGrafica(restriccion, nombre_recta = null) {
         restriccion[i][3] - restriccion[i][1] * maxVarY,
         restriccion[i][0]
       );
+      contSecundario += `
+      <h4>Recta ${
+        nombre_recta != null ? nombre_recta : i + 1
+      } Caso Especial X2:</h4>
+      <li><strong>x2</strong>=${pointY} <strong>x1</strong>= ${
+        restriccion[i][3]
+      } - (${restriccion[i][1]}(${maxVarY}))/ ${
+        restriccion[i][0]
+      } = ${contx}    <strong>(${contx},${pointY})</strong></li>
+      <li><strong>x2</strong>=0 <strong>x1</strong>= ${restriccion[i][3]} - (${
+        restriccion[i][1]
+      })/ ${
+        restriccion[i][0]
+      } = ${pointX}    <strong>(${pointX},0)</strong></li>`;
+    } else {
+      contSecundario += `
+      <h4>Recta ${nombre_recta != null ? nombre_recta : i + 1} :</h4>
+      <li><strong>x2</strong>=0 <strong>x1</strong>= ${
+        restriccion[i][3]
+      } - (0)/ ${
+        restriccion[i][0]
+      } = ${pointX}    <strong>(${pointX},0)</strong></li>
+      <li><strong>x1</strong>=0 <strong>x2</strong>= ${
+        restriccion[i][3]
+      } - (0)/ ${
+        restriccion[i][1]
+      } = ${pointY}    <strong>(0,${pointY})</strong></li>`;
     }
 
     // Se crea un arrego para los puntos una recta x1 x2 y1 y2
@@ -81,6 +131,8 @@ function ObtenerPuntosRectasGrafica(restriccion, nombre_recta = null) {
     // Generamos la Informacion respectiva para la Recta
     R.push(GenerarInformacionRectas(i, data, restriccion[i][2], nombre_recta));
   }
+  contSecundario += `</ol></li></ul>`;
+  contenedor_modelo.innerHTML += contSecundario;
   // retornando Informacion De Rectas
   return R;
 }
@@ -92,10 +144,10 @@ function GenerarInformacionRectas(NumeroRecta, data, Direccion, nombre = null) {
   // generamos los datos de las lineas que se van a mostrar en la grafica.
   return {
     type: "line",
-    label: nombre ? nombre : "Lineas " + (NumeroRecta + 1),
+    label: nombre ? nombre : "Recta " + (NumeroRecta + 1),
     data, //datos de X,Y para la generacion de cada linea
     borderColor: color, //color de la linea
-    borderWidth: 3, //Borde de la linea
+    borderWidth: 2, //Borde de la linea
     fill: Direccion ? "start" : "end", // Activar el relleno del área debajo de la línea
     backgroundColor: color + "20", // Color del área sombreada
   };
@@ -157,19 +209,6 @@ function Validar_Intersecciones_Validas(valuesInter, cantCoordenadas, res) {
   }
   return ValuesIntersecciones;
 }
-
-// let interseccionesValidas = [...intersecciones];
-// console.log("Intersecciones Validas", interseccionesValidas);
-// // Llamada a la función para encontrar intersecciones
-// for (let i = 0; i < DatosCoordenadas.length; i++) {
-//   interseccionesValidas = interseccionesValidas.filter((_, index) =>
-//     validarPunto(
-//       DatosCoordenadas[i].data,
-//       interseccionesValidas[index],
-//       Reestricciones[i][2]
-//     )
-//   );
-// }
 
 // Funcion para obtener posibles valores solucion
 function Determinar_Posibles_Soluciones(
@@ -238,16 +277,8 @@ function decimalAFraccion(numero) {
   }
   return numero;
 }
-
+// funcion para validar los puntos
 function validarPunto(linea, puntoAdicional, sentido) {
-  console.log(
-    "Validar Punto : " +
-      JSON.stringify(linea) +
-      " " +
-      JSON.stringify(puntoAdicional) +
-      " " +
-      sentido
-  );
   const valorPuntoLinea1 = linea[0];
   const valorPuntoLinea2 = linea[1];
   // ecuacion de la pendiente donde se determina los cambio de cada punto de la linea.
@@ -328,6 +359,8 @@ function NumeroRandom(min, max) {
 function crearTablaResultados(valoresFObjTotales) {
   const contenedor = document.getElementById("Container-Table");
   contenedor.innerHTML = "";
+  contenedor.innerHTML += `<h3 class="text-center row-sm-auto text-soluciones">Posibles Soluciones</h3>`;
+  contenedor.classList.add("display-flex");
   contenedor.style.display = "";
   // Crear una tabla
   const tabla = document.createElement("table");
@@ -341,7 +374,6 @@ function crearTablaResultados(valoresFObjTotales) {
 
   // Crear el cuerpo de la tabla
   const cuerpo = tabla.createTBody();
-  cuerpo.classList.add("primeraFila");
   valoresFObjTotales.forEach((valor) => {
     const fila = cuerpo.insertRow();
     for (let clave in valor) {
@@ -358,9 +390,9 @@ function DatosIntersecciones(PuntoSolucion, PosibleSoluciones) {
   if (PuntoSolucion) {
     puntos.push({
       data: [{ x: PuntoSolucion.x, y: PuntoSolucion.y }],
-      label: "Solución",
+      label: "Solución Optima",
       borderColor: "green",
-      borderWidth: 4,
+      borderWidth: 2,
       pointBackgroundColor: "green",
       pointRadius: 8,
     });
@@ -369,13 +401,14 @@ function DatosIntersecciones(PuntoSolucion, PosibleSoluciones) {
     data: PosibleSoluciones,
     label: "Intersecciones",
     borderColor: "red",
-    borderWidth: 1,
+    borderWidth: 2,
+    pointRadius: 8,
     pointBackgroundColor: "red",
-    pointRadius: 7,
+    backgroundColor: "red",
   });
   return puntos;
 }
-
+//funcion que recorre rapidamente las reestricciones y saca los puntos maximos para X y Y
 function ObtenerPuntosMaximos(Reestricciones) {
   let value_x,
     value_y = 0;
@@ -384,83 +417,137 @@ function ObtenerPuntosMaximos(Reestricciones) {
     value_y = Divide_CasoCero(res[3], res[1]);
     maxVarX <= value_x ? (maxVarX = value_x) : "";
     maxVarY <= value_y ? (maxVarY = value_y) : "";
-    console.log("value Max x : ", maxVarX, " Value max y : " + maxVarY);
   });
 }
 
-function GraficarPPL() {
-  maxVarX = -Infinity;
-  maxVarY = -Infinity;
-  // Canvas
-  RemoverCanvas();
-  InicializarCanvas();
-  // obtener puntos maximos para el plano cartesiano  X y Y, para las rectas con condiciones especiales.
-  ObtenerPuntosMaximos(Reestricciones);
+//Funcion que nos permite ver si hay multiples soluciones para el problema o es de unica solucion
+function hayMultiplesSoluciones(puntos) {
+  if (puntos.length === 0) return false;
 
-  // obtener las coordenadas de las rectas de las intersecciones
-  let DatosCoordenadas = ObtenerPuntosRectasGrafica(Reestricciones);
+  // Obtener el valor result del primer objeto
+  const valorResult = puntos[0].result;
 
-  console.log("Datos Coordenadas : ");
-  DatosCoordenadas.forEach((obj) => console.log(obj));
+  // Contar cuántas veces aparece este valor en el arreglo
+  const count = puntos.reduce((acc, punto) => {
+    if (punto.result === valorResult) {
+      return acc + 1;
+    }
+    return acc;
+  }, 0);
 
-  // Obtencion de intersecciones Basicas
-  let intersecciones = Intersecciones_Basicas(DatosCoordenadas);
+  // Si aparece más de una vez, hay múltiples soluciones
+  return count > 1;
+}
+// funcion que trae respuesta al tipo de problema
+function esPuntoFactible(punto, restricciones) {
+  return restricciones.every(([a, b, c, d]) => {
+    if (c == 0) {
+      return a * punto.x + b * punto.y >= d;
+    } else if (c == 1) {
+      return a * punto.x + b * punto.y <= d;
+    } else {
+      return a * punto.x + b * punto.y == d;
+    }
+  });
+}
+function esNoAcotado(intersecciones, restricciones) {
+  for (let i = 0; i < intersecciones.length; i++) {
+    const punto = intersecciones[i];
+    console.log("Linea 396 : ", esPuntoFactible(punto, restricciones));
+    if (esPuntoFactible(punto, restricciones)) continue;
+    const direccion = { x: punto.x + 100, y: punto.y }; // Mover en la dirección positiva de x
+    console.log("linea 408 : ", esPuntoFactible(direccion, restricciones));
+    if (esPuntoFactible(direccion, restricciones)) return true;
+  }
+  return false;
+}
 
-  // Obtener Intersecciones de las rectas
-  intersecciones.push(
-    ...InterseccionesMetodoCrammerDeterminante(Reestricciones)
-  );
-  console.log("Intersecciones Rectas  : " + JSON.stringify(intersecciones));
+function TipoProblema(interseccionesValidas, Reestricciones) {
+  let c = "";
+  esNoAcotado(interseccionesValidas, Reestricciones)
+    ? (c = "EL PROBLEMA NO TIENE SOLUCION PORQUE NO ES ACOTADO")
+    : (c = "");
+  return c;
+}
+//Generacion del html para mostrar el modelo
+function formulacion_modelo(funcion_obj, restricciones) {
+  let ve = ["A", "B"];
+  let vars = "";
+  for (var i = 0; i < funcion_obj.length; i++) {
+    vars += `<li> X${i + 1} : Unidades del Elemento ${ve[i]}</li>`;
+  }
 
-  // Validar  las intersecciones validas para las reestricciones
-  let interseccionesValidas = Validar_Intersecciones_Validas(
-    [...intersecciones],
-    DatosCoordenadas,
-    Reestricciones
-  );
+  let vares = "";
+  for (var i = 0; i < funcion_obj.length; i++) {
+    vares += `<li> ${restricciones[i][0]}<strong>x1</strong> ${
+      restricciones[i][1] > 0 ? `+` : `-`
+    } ${restricciones[i][1]}<strong>x2</strong> ${
+      restricciones[i][2] == 0 ? `>=` : restricciones[i][2] == 1 ? `<=` : `=`
+    } ${restricciones[i][3]}</li>`;
+  }
+  console.log(vares);
 
-  console.log(
-    "Intersecciones Validas : " + JSON.stringify(interseccionesValidas)
-  );
+  contenedor_modelo.innerHTML += `
+  <h2 class="text-center fw-bold">Formulación del Modelo:</h2>
+  <ul>
+  <li>
+  <h3 class="text-start">Variables de decisión:</h3>
+  <ol>${vars}</ol>
+  </li>
+  <li>
+  <h3 class="text-start">Función objetivo:</h3>
+  <p><strong>${(ObjetivoPPL = 0 ? "Minimizar " : "Maximizar ")}Z:</strong>  ${
+    funcion_obj[0]
+  }<strong>x1</strong> + ${funcion_obj[1]}<strong>x2</strong></p>
+  </li>
+  <li>
+  <h3 class="text-start">Reestricciones del problema:</h3>
+  <ol>${vares}</ol>
+  </li>
+  </ul>
+  `;
+}
+// funcion para mostrar los vertices
+function imprimirVertices(intersecciones, nom) {
+  // Crear la variable para la lista
+  let listaHTML = `<ul> <li><h3 class="text-start"> ${nom}: </h3><ol>`;
 
-  //Funcion para obtener los valores para la funcion objetivo * intersecciones validas
-  let valoresFOTotales = Determinar_Posibles_Soluciones(
-    interseccionesValidas,
-    ValuesObjetivo,
-    ObjetivoPPL
-  );
-  //console.log("Valores FOTotales : " + JSON.stringify(valoresFOTotales));
+  // Recorrer el array de intersecciones y agregar cada punto como un elemento de lista
+  intersecciones.forEach((punto, index) => {
+    listaHTML += `<li><strong>Vértice ${index + 1}: </strong>(x: ${
+      punto.x
+    }, y: ${punto.y})</li>`;
+  });
 
-  //Grafica de la Funcion Objetivo :
+  // Cerrar la lista
+  listaHTML += "</ol></li></ul>";
 
-  const fila = [
-    ValuesObjetivo[0],
-    ValuesObjetivo[1],
-    ObjetivoPPL,
-    valoresFOTotales[0].result,
-  ];
-  console.log("Esto es la fila : " + fila);
-  let dataFO = [];
-  dataFO.push(fila);
-  DatosCoordenadas.push(
-    ...ObtenerPuntosRectasGrafica(dataFO, "Funcion Objetivo")
-  );
+  // Retornar la estructura HTML
+  return listaHTML;
+}
 
-  DatosCoordenadas.push(
-    ...DatosIntersecciones(valoresFOTotales[0], interseccionesValidas)
-  );
+function sortByY(arr) {
+  return arr.sort((a, b) => b.y - a.y);
+}
 
-  // // Se vuelven decimales todos valores para una mejor comprension
-  // for (let valor of valoresFOTotales) {
-  //   valor.x = decimalAFraccion(valor.x);
-  //   valor.y = decimalAFraccion(valor.y);
-  //   valor.result = decimalAFraccion(valor.result);
-  // }
-
-  const chartData = {
+function obtenerInformacionZonaFactible(data) {
+  return {
     type: "line",
+    label: "Zona Factible",
+    data: sortByY(data),
+    borderColor: "green",
+    borderWidth: 3,
+    fill: 2, // Rellenar el área de intersección
+    showLine: true,
+    backgroundColor: "rgba(0, 128, 0, 0.8)",
+  };
+}
+
+function InformacionGrafica(data) {
+  return {
+    type: "scatter",
     data: {
-      datasets: DatosCoordenadas,
+      datasets: data,
     },
     options: {
       plugins: {
@@ -473,7 +560,7 @@ function GraficarPPL() {
         },
       },
       responsive: false,
-      maintainAspectRatio: false,
+      // maintainAspectRatio: false,
       scales: {
         x: {
           type: "linear",
@@ -486,24 +573,140 @@ function GraficarPPL() {
       },
     },
   };
+}
 
-  let myChart = new Chart(NuevoCanvas, chartData);
 
+function imprimirRespuestaProblema(var_acotado,valoresFOTotales,solution){
   $("#graph-label").append(`
     <div class="col-auto py-0 px-2">
-      <label
-        for="funcion"
-        class="col-sm-auto col-form-label text-end fw-bold variables-label"
-        style="font-size: 16px"
-        >${
+
+      ${
+        var_acotado != ""
+          ? `<h2 class="col-sm-auto text-center">
+        ${var_acotado}
+    </h2>`
+          :
+          `<h2 class="col-sm-auto text-center fw-bolder">
+        ${solution}
+    </h2>
+           <label for="funcion" class="col-sm-auto col-form-label text-center fw-bold variables-label"
+        style="font-size: 16px">
+        ${
           valoresFOTotales[0]
             ? `SOLUCION OPTIMA : X1 = ${valoresFOTotales[0].x}, X2 = ${valoresFOTotales[0].y}, Z = ${valoresFOTotales[0].result}`
             : "NO SE ENCUENTRA SOLUCIÓN"
-        }</label
-      >
+        }</label>`
+      }
+      
     </div>
   </div>
   `);
+}
+
+function GraficarPPL() {
+  maxVarX = -Infinity;
+  maxVarY = -Infinity;
+  let var_acotado = "";
+
+  // Remover E Inicializar Canvas
+  RemoverCanvas();
+  InicializarCanvas();
+
+  //Formulacion del modelo es para colocar en el html el modelo del PPL HTML
+  formulacion_modelo(ValuesObjetivo, Reestricciones, ObjetivoPPL);
+
+  // obtener puntos maximos para el plano cartesiano  X y Y, para las rectas con condiciones especiales.
+  ObtenerPuntosMaximos(Reestricciones);
+
+  // obtener las coordenadas de las rectas de las intersecciones
+  let rectas_problema = ObtenerPuntosRectasGrafica(Reestricciones);
+
+  // Obtencion de intersecciones Basicas
+  let intersecciones = Intersecciones_Basicas(rectas_problema);
+
+  // Obtener Intersecciones de las rectas
+  intersecciones.push(
+    ...InterseccionesMetodoCrammerDeterminante(Reestricciones)
+  );
+
+
+  // Imprimir los vertices basicos del problema HTML
+  contenedor_modelo.innerHTML += imprimirVertices(
+    intersecciones,
+    "Vertices Basicos"
+  );
+
+  // Validar  las intersecciones validas para las reestricciones
+  let interseccionesValidas = Validar_Intersecciones_Validas(
+    [...intersecciones],
+    rectas_problema,
+    Reestricciones
+  );
+  
+  // imprimir los vertices validos del problema HTML
+  contenedor_modelo.innerHTML += imprimirVertices(
+    interseccionesValidas,
+    "Vertices Validos"
+  );
+  // creacion de la zona factible
+  const interseccionDataset = obtenerInformacionZonaFactible(
+    interseccionesValidas
+  );
+  
+  // cerrar la zona factible
+  interseccionDataset.data.push(interseccionesValidas[0]);
+  
+
+  //Funcion para obtener los valores para la funcion objetivo * intersecciones validas
+  let valoresFOTotales = Determinar_Posibles_Soluciones(
+    interseccionesValidas,
+    ValuesObjetivo,
+    ObjetivoPPL
+  );
+
+  //Grafica de la Funcion Objetivo :
+  const fila = [
+    ValuesObjetivo[0],
+    ValuesObjetivo[1],
+    ObjetivoPPL,
+    valoresFOTotales[0].result,
+  ];
+  // Graficar informacion de la funcion objetivo
+  let dataFO = [];
+  dataFO.push(fila);
+
+  // // Se vuelven decimales todos valores para una mejor comprension
+  for (let valor of valoresFOTotales) {
+    valor.x = decimalAFraccion(valor.x);
+    valor.y = decimalAFraccion(valor.y);
+    valor.result = decimalAFraccion(valor.result);
+  }
+
+
+  // Arreglo que contiene la informacion a graficar
+  const DatosCoordenadas = [];
+  DatosCoordenadas.push(interseccionDataset);
+  DatosCoordenadas.push(interseccionDataset);
+  DatosCoordenadas.push(
+    ...DatosIntersecciones(valoresFOTotales[0], interseccionesValidas)
+  );
+  DatosCoordenadas.push(
+    ...ObtenerPuntosRectasGrafica(dataFO, "Funcion Objetivo")
+  );
+  rectas_problema.forEach((item) => DatosCoordenadas.push(item));
+
+  // grafica
+  const chartData = InformacionGrafica(DatosCoordenadas);
+  let myChart = new Chart(NuevoCanvas, chartData);
+
+  // DETERMINAR SI ES UN PROBLEMA ACOTADO
+  var_acotado = TipoProblema(interseccionesValidas, Reestricciones);
+  const valueSolutions = !hayMultiplesSoluciones(valoresFOTotales)
+    ? "Unica Solucion"
+    : "Multiple solucion";
+
+  imprimirRespuestaProblema(var_acotado,valoresFOTotales,valueSolutions);
+  
 
   crearTablaResultados(valoresFOTotales);
 }

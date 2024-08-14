@@ -6,19 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MathGraph</title>
     <!-- bibliotecas a utilizar -->
-
     <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="Style2.css" />
-    <link href="./lib/datatables/datatables.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="Style.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="./lib/math/math.min.js"></script>
     <script src="./lib/jquery/jquery.min.js"></script>
-    <!-- <script src="./lib/datatables/datatables.min.js"></script> -->
     <script src="./lib/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- <script src="./lib/popper/popper.min.js"></script> -->
-    <!-- <script src="./lib/sweet-alert/sweet-alert.min.js"></script> -->
+
 </head>
 
 <body>
@@ -78,10 +73,13 @@
                 los pares ordenados de valores (x0,y0) que hacen cierta la ecuación</b>. Par ordenado se refiere a que
             el primer valor siempre se sustituye en la x y el segundo en la y, en ese orden.
             <br>
-            Cada solución particular (x0,y0) de una ec. lineal tiene dos componentes, y por tanto se pueden representar como puntos sobre el plano cartesiano. Tomaremos x0 sobre el eje X o eje de abscisas y el valor y0 sobre el eje Y o eje de ordenadas.
+            Cada solución particular (x0,y0) de una ec. lineal tiene dos componentes, y por tanto se pueden representar
+            como puntos sobre el plano cartesiano. Tomaremos x0 sobre el eje X o eje de abscisas y el valor y0 sobre el
+            eje Y o eje de ordenadas.
             <br>
             <br>
-            <big><strong>Este es el objetivo de esta aplicacion poder representar graficamente la solucion para problemas representados con ecuaciones de dos incognitas : </strong></big>
+            <big><strong>Este es el objetivo de esta aplicacion poder representar graficamente la solucion para
+                    problemas representados con ecuaciones de dos incognitas : </strong></big>
         </p>
         <p>
 
@@ -190,6 +188,11 @@
             <hr class="w-100" />
         </div>
     </form>
+    <div id="modelo-container" class="container flex-column">
+
+    </div>
+
+    </div>
 
     <div id="canvas-container" class="container" style="display: none;">
         <div id="canvas-row-container" class="row justify-content-center">

@@ -127,8 +127,8 @@ const Calcular_Graficar = async () => {
   $("#canvas-container").show();
 };
 
-// Reestricciones=[[12, 8, 1, 96],[6, 12, 0, 48],[1, 0, 0, 2],[1, 0, 1, 7.5],[0, 1, 1, 8]];
+// Reestricciones=[[2, 1.5, 1, 105],[1, 0, 0,5],[-2,1,0,0]];
 // ObjetivoPPL=1;
-// ValuesObjetivo=[5,5];
+// ValuesObjetivo=[200,120];
 // GraficarPPL();
 // $("#canvas-container").show();
